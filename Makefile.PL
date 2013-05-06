@@ -19,6 +19,8 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'autodie' => 0,
+        'autobox' => 0,
+        'Try::Tiny' => 0,
         'AnyEvent::HTTP' => 0,
         'File::Copy::Recursive' => 0,
         'Spreadsheet::ParseExcel' => 0,
@@ -29,6 +31,7 @@ WriteMakefile(
         'Time::HiRes' => 0,
         'DBI' => 0,
         'SQL::Abstract' => 0,
+        'Child' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'NG-*' },

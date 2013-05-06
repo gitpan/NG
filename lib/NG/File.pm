@@ -1,10 +1,10 @@
-package File;
+package NG::File;
 use strict;
 use warnings;
-use base qw(Object);
-use Array;
-use Hashtable;
-use Time;
+use base qw(NG::Object);
+use NG::Array;
+use NG::Hashtable;
+use NG::Time;
 use File::Find;
 use File::Copy::Recursive;
 use YAML::XS ();
@@ -25,8 +25,8 @@ sub from_yaml {
     my $ref = YAML::XS::LoadFile($filepath);
     return
       ref($ref) eq 'HASH'
-      ? NewBie::Gift::Hashtable->new($ref)
-      : NewBie::Gift::Array->new($ref);
+      ? NG::Hashtable->new($ref)
+      : NG::Array->new($ref);
 }
 
 sub from_json {
@@ -35,8 +35,8 @@ sub from_json {
     my $ref  = JSON::XS::decode_json($data);
     return
       ref($ref) eq 'HASH'
-      ? NewBie::Gift::Hashtable->new($ref)
-      : NewBie::Gift::Array->new($ref);
+      ? NG::Hashtable->new($ref)
+      : NG::Array->new($ref);
 }
 
 =head2 read_file
@@ -53,7 +53,7 @@ sub from_json {
 sub read_file {
     my ( $filepath, $cb ) = @_;
     open my $fh, '<', $filepath;
-    my $content = new Array;
+    my $content = new NG::Array;
     while (<$fh>) {
         chomp;
         $content->push($_);
@@ -92,7 +92,7 @@ sub read_dir {
     }
     else {
         my $dirpath = shift;
-        return Array->new( glob("$dirpath/*") );
+        return NG::Array->new( glob("$dirpath/*") );
     }
 }
 
@@ -120,8 +120,8 @@ sub cp_r { File::Copy::Recursive::rcopy(@_) }
 
 sub fstat {
     my ( $file ) = @_;
-    my $ret = Array->new( stat($file) );
-    return Hashtable->new(
+    my $ret = NG::Array->new( stat($file) );
+    return NG::Hashtable->new(
         dev     => $ret->get(0),
         inode   => $ret->get(1),
         mode    => sprintf( "%04o", $ret->get(2) & 07777 ),
@@ -130,9 +130,9 @@ sub fstat {
         gid     => $ret->get(5),
         rdev    => $ret->get(6),
         size    => $ret->get(7),
-        atime   => Time->new->from_epoch( $ret->get(8) ),
-        mtime   => Time->new->from_epoch( $ret->get(9) ),
-        ctime   => Time->new->from_epoch( $ret->get(10) ),
+        atime   => NG::Time->new->from_epoch( $ret->get(8) ),
+        mtime   => NG::Time->new->from_epoch( $ret->get(9) ),
+        ctime   => NG::Time->new->from_epoch( $ret->get(10) ),
         blksize => $ret->get(11),
         blocks  => $ret->get(12),
     );

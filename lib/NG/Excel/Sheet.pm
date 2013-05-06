@@ -1,15 +1,15 @@
-package Excel::Sheet;
+package NG::Excel::Sheet;
 use strict;
 use warnings;
-use Array;
-use Excel::Cell;
-use base qw(Object);
+use NG::Array;
+use NG::Excel::Cell;
+use base qw(NG::Object);
 
 sub new {
     my ( $pkg, @config ) = @_;
     my $sheet = {
         name      => 'no name',
-        cells     => Array->new( Array->new ),
+        cells     => NG::Array->new( NG::Array->new ),
         row_count => 0,
         col_count => 0,
         @config,
@@ -42,7 +42,7 @@ sub get {
 
 sub _letter_to_num {
     my $str     = shift;
-    my $letters = Array->new( split //, uc($str) );
+    my $letters = NG::Array->new( split //, uc($str) );
     my $res     = 0;
     for ( my $i = ( $letters->size ) - 1 ; $i >= 0 ; $i-- ) {
         $res +=

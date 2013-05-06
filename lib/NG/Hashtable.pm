@@ -1,9 +1,9 @@
-package Hashtable;
+package NG::Hashtable;
 
 use strict;
 use warnings;
-use base qw(Object);
-use Array;
+use base qw(NG::Object);
+use NG::Array;
 
 sub new {
     my $pkg  = shift;
@@ -24,12 +24,12 @@ sub get {
 
 sub keys {
     my ($self) = @_;
-    return new Array( keys %$self );
+    return new NG::Array( keys %$self );
 }
 
 sub values {
     my ($self) = @_;
-    return new Array( values %$self );
+    return new NG::Array( values %$self );
 }
 
 sub remove {
@@ -47,6 +47,18 @@ sub each {
         }
     );
     return $self;
+}
+
+sub flip {
+    my ($self) = @_;
+    my $tmp = NG::Hashtable->new;
+    $self->keys->each(
+        sub {
+            my ($key) = @_;
+            $tmp->put( $self->get($key), $key );
+        }
+    );
+    return $tmp;
 }
 
 1;

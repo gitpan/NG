@@ -1,12 +1,12 @@
-package Excel;
+package NG::Excel;
 
 use strict;
 use warnings;
-use base qw(Object);
-use Array;
+use base qw(NG::Object);
 use Spreadsheet::WriteExcel;
-use Excel::Cell;
-use Excel::Sheet;
+use NG::Array;
+use NG::Excel::Cell;
+use NG::Excel::Sheet;
 
 sub new {
     my ( $pkg, $sheet_arr ) = @_;
@@ -18,7 +18,7 @@ sub sheet {
     return $self->[ $sheet_num - 1 ];
 }
 
-sub sheets { return Array->new( @{ +shift } ); }
+sub sheets { return NG::Array->new( @{ +shift } ); }
 
 sub save {
     my ( $self, $to_file ) = @_;
@@ -56,14 +56,14 @@ sub save {
                               )
                         );
                         $format->set_bottom(
-                            Excel::Cell->english_to_num(
+                            NG::Excel::Cell->english_to_num(
                                 $cell->{border_bottom}->{width},
                                 $cell->{border_bottom}->{style}
                             )
                         );
                         $format->set_bottom_color(40);
                         $format->set_left(
-                            Excel::Cell->english_to_num(
+                            NG::Excel::Cell->english_to_num(
                                 $cell->{border_left}->{width},
                                 $cell->{border_left}->{style}
                             )

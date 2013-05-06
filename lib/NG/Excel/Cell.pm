@@ -1,9 +1,9 @@
-package Excel::Cell;
+package NG::Excel::Cell;
 
 use 5.010;
 use strict;
 use warnings;
-use base qw(Object);
+use base qw(NG::Object);
 
 sub new {
     my ( $pkg, @config ) = @_;

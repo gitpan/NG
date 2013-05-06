@@ -1,4 +1,4 @@
-package Object;
+package NG::Object;
 
 use strict;
 use warnings;

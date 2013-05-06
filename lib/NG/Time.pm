@@ -1,9 +1,9 @@
-package Time;
+package NG::Time;
 use strict;
 use warnings;
 use Time::HiRes ();
 use POSIX       ();
-use base 'Object';
+use base 'NG::Object';
 
 sub new {
     my $pkg = shift;
@@ -82,7 +82,7 @@ sub strftime {
     my $self   = shift;
     my $format = shift;
     my @need_t;
-    if ( ref( $_[0] ) eq 'Time' ) {
+    if ( ref( $_[0] ) eq 'NG::Time' ) {
         @need_t = localtime( shift->to_epoch );
     }
     else {

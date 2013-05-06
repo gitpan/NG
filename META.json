@@ -34,6 +34,7 @@
       "runtime" : {
          "requires" : {
             "AnyEvent::HTTP" : "0",
+            "Child" : "0",
             "DBI" : "0",
             "File::Copy::Recursive" : "0",
             "HTML::Element" : "5.00",
@@ -43,11 +44,13 @@
             "Spreadsheet::ParseExcel" : "0",
             "Spreadsheet::WriteExcel" : "0",
             "Time::HiRes" : "0",
+            "Try::Tiny" : "0",
+            "autobox" : "0",
             "autodie" : "0",
             "perl" : "5.01"
          }
       }
    },
-   "release_status" : "stable",
-   "version" : "0.001"
+   "release_status" : "testing",
+   "version" : "0.001_01"
 }

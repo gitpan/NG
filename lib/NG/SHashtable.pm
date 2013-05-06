@@ -1,8 +1,8 @@
-package SHashtable;
+package NG::SHashtable;
 
 use strict;
 use warnings;
-use base qw(Hashtable);
+use base qw(NG::Hashtable);
 
 sub new {
     my $pkg  = shift;

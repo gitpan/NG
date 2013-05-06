@@ -1,30 +1,28 @@
 package NG;
 use strict;
 use warnings;
+use Try::Tiny;
 
-our $VERSION = '0.001';
-use File::Basename qw(dirname);
-use lib dirname(__FILE__) . '/NG';
-use Object;
-use Array;
-use Hashtable;
-use SHashtable;
-use DB;
-use Excel;
-use Excel::Cell;
-use Excel::Sheet;
+our $VERSION = '0.001_01';
 use Spreadsheet::ParseExcel;
-use HTTP::Client;
-use EMail;
-use File;
-use Log;
-use System;
-use Time;
+use NG::Autobox;
+use NG::Array;
+use NG::DB;
+use NG::Excel;
+use NG::Excel::Cell;
+use NG::Excel::Sheet;
+use NG::HTTP::Client;
+use NG::EMail;
+use NG::File;
+use NG::Log;
+use NG::System;
+use NG::Time;
 
 use base 'Exporter';
 our @EXPORT = qw(
   local_run
   remote_run
+  fork_run
   taskset
 
   web_get
@@ -49,23 +47,24 @@ our @EXPORT = qw(
   parse_excel
 );
 
-sub local_run   { System::local_run(@_) }
-sub remote_run  { System::remote_run(@_) }
-sub taskset     { System::taskset(@_) }
-sub web_get     { HTTP::Client::web_get(@_) }
-sub mail_send   { EMail::send(@_) }
-sub mail_get    { EMail::get(@_) }
-sub from_json   { File::from_json(@_) }
-sub from_yaml   { File::from_yaml(@_) }
-sub mkdir_p     { File::mkdir_p(@_) }
-sub rm_r        { File::rm_r(@_) }
-sub cp_r        { File::cp_r(@_) }
-sub read_file   { File::read_file(@_) }
-sub read_dir    { File::read_dir(@_) }
-sub file_stat   { File::fstat(@_) }
-sub process_log { Log::process_log(@_) }
-sub geo_ip      { Log::geo_ip(@_) }
-sub db          { DB->new(@_) }
+sub local_run   { NG::System::local_run(@_) }
+sub remote_run  { NG::System::remote_run(@_) }
+sub for_run     { NG::System::fork_run(@_) }
+sub taskset     { NG::System::taskset(@_) }
+sub web_get     { NG::HTTP::Client::web_get(@_) }
+sub mail_send   { NG::EMail::send(@_) }
+sub mail_get    { NG::EMail::get(@_) }
+sub from_json   { NG::File::from_json(@_) }
+sub from_yaml   { NG::File::from_yaml(@_) }
+sub mkdir_p     { NG::File::mkdir_p(@_) }
+sub rm_r        { NG::File::rm_r(@_) }
+sub cp_r        { NG::File::cp_r(@_) }
+sub read_file   { NG::File::read_file(@_) }
+sub read_dir    { NG::File::read_dir(@_) }
+sub file_stat   { NG::File::fstat(@_) }
+sub process_log { NG::Log::process_log(@_) }
+sub geo_ip      { NG::Log::geo_ip(@_) }
+sub db          { NG::DB->new(@_) }
 
 sub parse_excel {
     my ( $filepath, $cb ) = @_;
@@ -74,12 +73,12 @@ sub parse_excel {
     if ( !defined $workbook ) {
         die $parser->error() . "\n";
     }
-    my $ng_sheet_arr = Array->new;
+    my $ng_sheet_arr = NG::Array->new;
     for my $sheet ( $workbook->worksheets() ) {
         my ( $row_min, $row_max ) = $sheet->row_range();
         my ( $col_min, $col_max ) = $sheet->col_range();
 
-        my $ng_sheet = Excel::Sheet->new(
+        my $ng_sheet = NG::Excel::Sheet->new(
             name      => $sheet->get_name(),
             row_count => $row_max + 1,
             col_count => $col_max + 1,
@@ -90,14 +89,14 @@ sub parse_excel {
                 my $cell = $sheet->get_cell( $row, $col );
                 next unless $cell;
 
-                my $ng_cell = Excel::Cell->new( value => $cell->value(), );
+                my $ng_cell = NG::Excel::Cell->new( value => $cell->value(), );
                 $ng_sheet->{cells}->[$row][$col] = $ng_cell;
             }
         }
         $ng_sheet_arr->push($ng_sheet);
     }
 
-    my $ng_excel = Excel->new($ng_sheet_arr);
+    my $ng_excel = NG::Excel->new($ng_sheet_arr);
     if ( defined $cb ) {
         $cb->($ng_excel);
         $ng_excel->save($filepath);
@@ -114,6 +113,8 @@ sub import {
     warnings->import;
     utf8->import;
     feature->import(':5.10');
+    Try::Tiny->import;
+    NG::Autobox::import($class);
     $class->export_to_level(1, $class, @EXPORT);
 }
 

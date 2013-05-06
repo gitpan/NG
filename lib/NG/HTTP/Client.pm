@@ -1,9 +1,9 @@
-package HTTP::Client;
+package NG::HTTP::Client;
 use strict;
 use warnings;
-use base qw(Object);
-use SHashtable;
-use HTTP::DOM;
+use base qw(NG::Object);
+use NG::SHashtable;
+use NG::HTTP::DOM;
 use AnyEvent::HTTP;
 use AnyEvent;
 
@@ -45,8 +45,8 @@ sub web_get {
         http_get $url, sub {
             my ( $data, $headers ) = @_;
             my $code        = delete $headers->{Status};
-            my $res_headers = SHashtable->new(%$headers);
-            $content        = HTTP::DOM->new($data);
+            my $res_headers = NG::SHashtable->new(%$headers);
+            $content        = NG::HTTP::DOM->new($data);
             $w->end;
             if ( defined $cb ) {
                 $cb->( $content, $code, $res_headers );

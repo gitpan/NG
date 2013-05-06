@@ -1,8 +1,8 @@
-package NewBie::Gift::DB;
+package NG::DB;
 use warnings;
 use strict;
-use base 'Object';
-use Hashtable;
+use base 'NG::Object';
+use NG::Hashtable;
 use SQL::Abstract;
 use DBI;
 

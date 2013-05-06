@@ -1,4 +1,4 @@
-package Log::IPMatcher;
+package NG::Log::IPMatcher;
 
 # Author: newestbie
 # E-mail: newestbie@gmail.com

@@ -1,11 +1,12 @@
-package Log;
+package NG::Log;
 use strict;
 use warnings;
 use autodie;
 use 5.010;
-use base qw(Object);
-use Hashtable;
-use Array;
+use base qw(NG::Object);
+use NG::Hashtable;
+use NG::Array;
+use NG::Log::IPMatcher;
 use Geo::IP;
 
 sub new {
@@ -29,9 +30,13 @@ sub process_log {
     open my $fh, '<', $logpath;
     while (<$fh>) {
         chomp;
-        my $lines = Array->new( split( $sep, $_ ) );
+        my $lines = NG::Array->new( split( $sep, $_ ) );
         $cb->($lines);
     }
+}
+
+sub geo_ip {
+    ...
 }
 
 1;

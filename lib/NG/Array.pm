@@ -1,8 +1,10 @@
-package Array;
+package NG::Array;
 
 use strict;
 use warnings;
-use base qw(Object);
+use base qw(NG::Object);
+use NG::Hashtable;
+use List::Util;
 
 sub new {
     my $pkg  = shift;
@@ -49,7 +51,7 @@ sub sort {
     else {
         @tmp = sort @$self;
     }
-    return Array->new(@tmp);
+    return NG::Array->new(@tmp);
 }
 
 sub size {
@@ -65,6 +67,55 @@ sub get {
 sub join {
     my ( $self, $expr ) = @_;
     return join( $expr, @$self );
+}
+
+sub to_hash {
+    my ($self) = @_;
+    return NG::Hashtable->new(@$self);
+}
+
+sub zip {
+    my ( $self, @arrs ) = @_;
+    my $tmp  = NG::Array->new;
+    my $size = NG::Array->new;
+    $size->push($_->size) for @_;
+    for my $i ( 0 .. $size->max - 1 ) {
+        $tmp->push($_->get($i) || '') for @_;
+    }
+    return $tmp;
+}
+
+sub uniq {
+    my ($self) = @_;
+    my %seen;
+    return $self->grep(sub {
+        not $seen{$_}++;
+    });
+}
+
+sub reduce {
+    my ( $self, $sub ) = @_;
+    return reduce { $sub->($a, $b) } @$self;
+}
+
+sub grep {
+    my ( $self, $sub ) = @_;
+    return NG::Array->new( grep { $sub->($_) } @$self );
+}
+
+sub map {
+    my ( $self, $sub ) = @_;
+    return NG::Array->new( map { $sub->($_) } @$self );
+}
+
+sub max {
+    my ($self) = @_;
+    return List::Util::max( @$self );
+}
+
+sub min {
+    my ($self) = @_;
+    return List::Util::min( @$self );
 }
 
 1;

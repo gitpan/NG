@@ -1,12 +1,13 @@
-package System;
+package NG::System;
 use warnings;
 use strict;
 use autodie;
-use base 'Object';
-use Array;
+use base 'NG::Object';
+use NG::Array;
 use IPC::Open3;
 use Symbol;
 use Sys::CpuAffinity;
+use Child;
 
 sub new {
     my $pkg = shift;
@@ -22,7 +23,6 @@ sub new {
 	    ...
     }
 =cut
-
 sub local_run {
     my $inh  = gensym;
     my $outh = gensym;
@@ -35,8 +35,8 @@ sub local_run {
 
     my $ret = open3( $inh, $outh, $errh, @commands );
 
-    my $stdout = Array->new;
-    my $stderr = Array->new;
+    my $stdout = NG::Array->new;
+    my $stderr = NG::Array->new;
     while (<$outh>) {
         chomp;
         $stdout->push($_);
@@ -60,7 +60,6 @@ TODO: async ssh command
 	    my ($out, $err) = @_;
     }
 =cut
-
 sub remote_run {
     my $cb    = pop @_;
     my $cmd   = pop @_;
@@ -71,10 +70,28 @@ sub remote_run {
 =head2 taskset
     taskset($subpid, [0, 2])
 =cut
-
 sub taskset {
     my ( $pid, @cpus ) = @_;
     Sys::CpuAffinity::setAffinity( $pid, \@cpus );
 }
+
+=head2 fork_run
+    Array->new(1, 2, 3)->each(sub {
+        my $i = shift;
+        System::fork_run(
+            sub { my $parent = shift; my $ppid = $parent->pid; my $line = $parent->read; $parent->say("$ppid teach $line") },
+            sub { my $child = shift; $child->say("$i");printf "%d learn: %s\n", $child->pid, $child->read; },
+        );
+    });
+=cut
+sub fork_run {
+    my ( $code, $cb ) = @_;
+    my $child = Child->new(sub {
+        my ( $parent ) = @_;
+        $code->($parent);
+    }, pipe => 1);
+    my $proc = $child->start;
+    $cb->($proc);
+};
 
 1;

@@ -1,8 +1,8 @@
-package HTTP::DOM;
+package NG::HTTP::DOM;
 use warnings;
 use strict;
-use base 'Object';
-use Array;
+use base 'NG::Object';
+use NG::Array;
 use HTML::TreeBuilder::XPath;
 use HTML::Selector::XPath qw(selector_to_xpath);
 
@@ -17,14 +17,14 @@ sub new {
     $tree->ignore_unknown(0);
     $tree->store_comments(1);
     $tree->parse_content($html);
-    my $self = $pkg->new_from_element( Array->new( $tree->guts ) );
+    my $self = $pkg->new_from_element( NG::Array->new( $tree->guts ) );
     $self->{need_delete}++;
     return $self;
 }
 
 sub new_from_element {
     my $class = shift;
-    my $trees = ref $_[0] eq 'Array' ? $_[0] : Array->new( $_[0] );
+    my $trees = ref $_[0] eq 'NG::Array' ? $_[0] : NG::Array->new( $_[0] );
     return bless { trees => $trees, before => $_[1] }, ref($class) || $class;
 }
 
@@ -40,7 +40,7 @@ sub size {
 
 sub parent {
     my $self = shift;
-    my $new  = Array->new;
+    my $new  = NG::Array->new;
     $self->{trees}->each(
         sub {
             $new->push( shift->getParentNode() );
@@ -52,24 +52,24 @@ sub parent {
 sub first {
     my $self = shift;
     return ( ref $self || $self )
-      ->new_from_element( Array->new( $self->{trees}->get(0) || () ), $self );
+      ->new_from_element( NG::Array->new( $self->{trees}->get(0) || () ), $self );
 }
 
 sub last {
     my $self = shift;
     return ( ref $self || $self )
-      ->new_from_element( Array->new( $self->{trees}->get(-1) || () ), $self );
+      ->new_from_element( NG::Array->new( $self->{trees}->get(-1) || () ), $self );
 }
 
 =head2 find
     my $dom = HTTP::DOM->new($content);
-    print $dom->find('#m')->text->get(0);
+    print $dom->find('#m')->text;
 =cut
 sub find {
     my ( $self, $selector ) = @_;
     my $xpath_rootless = selector_to_xpath($selector);
 
-    my $new = Array->new;
+    my $new = NG::Array->new;
     $self->{trees}->each(
         sub {
             my $tree = shift;
@@ -88,11 +88,30 @@ sub find {
     return ( ref $self || $self )->new_from_element( $new, $self );
 }
 
+=head2 each
+    $dom->find('#m')->each(sub {
+        my $i = shift;
+        printf "(%d) %s\n", $i+1, $_->text;
+    })
+=cut
+sub each {
+    my ($self, $code) = @_;
+    my $i = 0;
+    $self->{trees}->each(
+        sub {
+            my $tree = shift;
+            local $_ = (ref $self || $self)->new_from_element(NG::Array->new($tree), $self);
+            $code->($i++, $_);
+        }
+    );
+    return $self;
+}
+
 =head2 html
 =cut
 sub html {
     my $self = shift;
-    my $html = Array->new;
+    my $html = NG::Array->new;
     $self->{trees}->each(
         sub {
             $html->push( shift->as_HTML );
@@ -103,7 +122,7 @@ sub html {
 
 sub xml {
     my $self = shift;
-    my $html = Array->new;
+    my $html = NG::Array->new;
     $self->{trees}->each(
         sub {
             $html->push( shift->as_XML_indented );
@@ -114,11 +133,11 @@ sub xml {
 
 =head2 text
     my $dom = HTTP::DOM->new($content);
-    print $dom->text->get(0);
+    print $dom->text;
 =cut
 sub text {
     my $self = shift;
-    my $text = Array->new;
+    my $text = NG::Array->new;
     $self->{trees}->each(
         sub {
             $text->push( shift->as_text );
@@ -132,12 +151,12 @@ sub text {
     my $hc = HTTP::Client->new;
     my $content = $hc->web_get($url);
     my $dom = HTTP::DOM->new($content);
-    print $dom->find('meta')->attr('content')->get(0);
+    print $dom->find('meta')->attr('content');
 =cut
 sub attr {
     my $self      = shift;
     my @attr_keys = @_;
-    my $retval    = Array->new;
+    my $retval    = NG::Array->new;
     $self->{trees}->each(
         sub {
             $retval->push( shift->attr(@attr_keys) );
