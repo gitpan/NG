@@ -1,0 +1,38 @@
+---
+abstract: ~
+author:
+  - 'chenryn <rao.chenlin@gmail.com>'
+build_requires:
+  Test::Deep: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+distribution_type: module
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 6.57_05'
+license: Artistic_2_0
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: NG
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  AnyEvent::HTTP: 0
+  Child: 0
+  DBI: 0
+  File::Copy::Recursive: 0
+  HTML::Element: 5.00
+  HTML::Selector::XPath: 0
+  HTML::TreeBuilder::XPath: 0
+  SQL::Abstract: 0
+  Spreadsheet::ParseExcel: 0
+  Spreadsheet::WriteExcel: 0
+  Time::HiRes: 0
+  Try::Tiny: 0
+  autobox: 0
+  autodie: 0
+  perl: 5.01
+version: 0.001_02
