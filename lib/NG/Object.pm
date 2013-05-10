@@ -14,4 +14,8 @@ sub dump {
     return Dumper($self);
 }
 
+sub meta {
+    { attrs => [], methods => ['dump'] }
+}
+
 1;

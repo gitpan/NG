@@ -36,4 +36,4 @@ $hash->each(
 
 cmp_deeply $hash->values, NG::Array->new( 3, 4 );
 
-cmp_deeply $hash->flip, NG::Hashtable->new(3 => 'key2', 4 => 'key3');
+cmp_deeply $hash->flip, NG::Hashtable->new(4 => 'key3', 3 => 'key2');

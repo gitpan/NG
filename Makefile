@@ -60,11 +60,11 @@ DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
 NAME = NG
 NAME_SYM = NG
-VERSION = 0.001_02
+VERSION = 0.001_03
 VERSION_MACRO = VERSION
-VERSION_SYM = 0_001_02
+VERSION_SYM = 0_001_03
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 0.001_02
+XS_VERSION = 0.001_03
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib/arch
@@ -241,10 +241,10 @@ PM_TO_BLIB = lib/NG/Log/IPMatcher.pm \
 	blib/lib/NG/File.pm \
 	lib/NG/Excel.pm \
 	blib/lib/NG/Excel.pm \
-	lib/NG/EMail.pm \
-	blib/lib/NG/EMail.pm \
 	lib/NG/System.pm \
 	blib/lib/NG/System.pm \
+	lib/NG/EMail.pm \
+	blib/lib/NG/EMail.pm \
 	lib/NG/HTTP/Client.pm \
 	blib/lib/NG/HTTP/Client.pm \
 	lib/NG/Time.pm \
@@ -325,7 +325,7 @@ RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
 DISTNAME = NG
-DISTVNAME = NG-0.001_02
+DISTVNAME = NG-0.001_03
 
 
 # --- MakeMaker macro section:
@@ -482,8 +482,8 @@ POD2MAN = $(POD2MAN_EXE)
 manifypods : pure_all  \
 	lib/NG/Class.pm \
 	lib/NG/File.pm \
-	lib/NG/EMail.pm \
 	lib/NG/System.pm \
+	lib/NG/EMail.pm \
 	lib/NG/DB.pm \
 	lib/NG/HTTP/Client.pm \
 	lib/NG.pm \
@@ -493,8 +493,8 @@ manifypods : pure_all  \
 	$(NOECHO) $(POD2MAN) --section=$(MAN3EXT) --perm_rw=$(PERM_RW) \
 	  lib/NG/Class.pm $(INST_MAN3DIR)/NG::Class.$(MAN3EXT) \
 	  lib/NG/File.pm $(INST_MAN3DIR)/NG::File.$(MAN3EXT) \
-	  lib/NG/EMail.pm $(INST_MAN3DIR)/NG::EMail.$(MAN3EXT) \
 	  lib/NG/System.pm $(INST_MAN3DIR)/NG::System.$(MAN3EXT) \
+	  lib/NG/EMail.pm $(INST_MAN3DIR)/NG::EMail.$(MAN3EXT) \
 	  lib/NG/DB.pm $(INST_MAN3DIR)/NG::DB.$(MAN3EXT) \
 	  lib/NG/HTTP/Client.pm $(INST_MAN3DIR)/NG::HTTP::Client.$(MAN3EXT) \
 	  lib/NG.pm $(INST_MAN3DIR)/NG.$(MAN3EXT) \
@@ -566,7 +566,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) Generating META.yml
 	$(NOECHO) $(ECHO) '--- #YAML:1.0' > META_new.yml
 	$(NOECHO) $(ECHO) 'name:               NG' >> META_new.yml
-	$(NOECHO) $(ECHO) 'version:            0.001_02' >> META_new.yml
+	$(NOECHO) $(ECHO) 'version:            0.001_03' >> META_new.yml
 	$(NOECHO) $(ECHO) 'abstract:           ~' >> META_new.yml
 	$(NOECHO) $(ECHO) 'author:' >> META_new.yml
 	$(NOECHO) $(ECHO) '    - chenryn <rao.chenlin@gmail.com>' >> META_new.yml
@@ -868,7 +868,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd :
-	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0.001_02">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0.001_03">' > $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR>chenryn &lt;rao.chenlin@gmail.com&gt;</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
@@ -910,8 +910,8 @@ pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	  lib/NG/Autobox.pm blib/lib/NG/Autobox.pm \
 	  lib/NG/File.pm blib/lib/NG/File.pm \
 	  lib/NG/Excel.pm blib/lib/NG/Excel.pm \
-	  lib/NG/EMail.pm blib/lib/NG/EMail.pm \
 	  lib/NG/System.pm blib/lib/NG/System.pm \
+	  lib/NG/EMail.pm blib/lib/NG/EMail.pm \
 	  lib/NG/HTTP/Client.pm blib/lib/NG/HTTP/Client.pm \
 	  lib/NG/Time.pm blib/lib/NG/Time.pm \
 	  lib/NG/Excel/Sheet.pm blib/lib/NG/Excel/Sheet.pm \

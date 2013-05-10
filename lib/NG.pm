@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Try::Tiny;
 
-our $VERSION = '0.001_02';
+our $VERSION = '0.001_03';
 use Spreadsheet::ParseExcel;
 use NG::Autobox;
 use NG::Array;
@@ -17,6 +17,7 @@ use NG::File;
 use NG::Log;
 use NG::System;
 use NG::Time;
+use NG::Class;
 
 use base 'Exporter';
 our @EXPORT = qw(

@@ -35,4 +35,4 @@ requires:
   autobox: 0
   autodie: 0
   perl: 5.01
-version: 0.001_02
+version: 0.001_03
