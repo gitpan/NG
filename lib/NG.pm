@@ -2,8 +2,10 @@ package NG;
 use strict;
 use warnings;
 use Try::Tiny;
-
-our $VERSION = '0.001_03';
+use autodie;
+use YAML::XS ();
+use JSON::XS ();
+use XML::Simple;
 use Spreadsheet::ParseExcel;
 use NG::Autobox;
 use NG::Array;
@@ -14,6 +16,7 @@ use NG::Excel::Sheet;
 use NG::HTTP::Client;
 use NG::EMail;
 use NG::File;
+use NG::Dir;
 use NG::Log;
 use NG::System;
 use NG::Time;
@@ -44,31 +47,65 @@ our @EXPORT = qw(
   geo_ip
 
   db
+  now
 
   parse_excel
 
   def_class
 );
+our $VERSION = '0.001_04';
 
-sub local_run   { NG::System::local_run(@_) }
-sub remote_run  { NG::System::remote_run(@_) }
-sub for_run     { NG::System::fork_run(@_) }
-sub taskset     { NG::System::taskset(@_) }
-sub web_get     { NG::HTTP::Client::web_get(@_) }
-sub mail_send   { NG::EMail::send(@_) }
-sub mail_get    { NG::EMail::get(@_) }
-sub from_json   { NG::File::from_json(@_) }
-sub from_yaml   { NG::File::from_yaml(@_) }
-sub mkdir_p     { NG::File::mkdir_p(@_) }
-sub rm_r        { NG::File::rm_r(@_) }
-sub cp_r        { NG::File::cp_r(@_) }
-sub read_file   { NG::File::read_file(@_) }
-sub read_dir    { NG::File::read_dir(@_) }
-sub file_stat   { NG::File::fstat(@_) }
+sub file_stat   { NG::File->fstat(@_) }
+sub file_md5    { NG::File->md5(@_) }
+sub cp_r        { NG::File->copy(@_) }
 sub process_log { NG::Log::process_log(@_) }
 sub geo_ip      { NG::Log::geo_ip(@_) }
 sub def_class   { NG::Class::def(@_) }
 sub db          { NG::DB->new(@_) }
+sub now         { NG::Time->now }
+sub local_run   { NG::System::local_run(@_) }
+sub remote_run  { NG::System::remote_run(@_) }
+sub fork_run    { NG::System::fork_run(@_) }
+sub taskset     { NG::System::taskset(@_) }
+sub web_get     { NG::HTTP::Client::web_get(@_) }
+sub mail_send   { NG::EMail::send(@_) }
+sub mail_get    { NG::EMail::get(@_) }
+sub mkdir_p     { NG::Dir->make(@_) }
+sub rm_r        { NG::Dir->remove(@_) }
+sub read_dir    { NG::Dir->read(@_) }
+
+sub read_file {
+    my ( $file, $cb ) = @_;
+    unless ( defined $cb ) {
+        open my $fh, '<', $file;
+        return do { local $/; <$fh> }
+    }
+    my $content = NG::File->read($file);
+    $cb->($content);
+}
+
+sub from_yaml {
+    my $ref = YAML::XS::LoadFile(@_);
+    return ref($ref) eq 'HASH'
+      ? NG::Hashtable->new($ref)
+      : NG::Array->new($ref);
+}
+
+sub from_json {
+    my $data = &read_file(@_);
+    my $ref  = JSON::XS::decode_json($data);
+    return ref($ref) eq 'HASH'
+      ? NG::Hashtable->new($ref)
+      : NG::Array->new($ref);
+}
+
+sub from_xml {
+    my $data = &read_file(@_);
+    my $ref  = XMLin($data);
+    return ref($ref) eq 'HASH'
+      ? NG::Hashtable->new($ref)
+      : NG::Array->new($ref);
+}
 
 sub parse_excel {
     my ( $filepath, $cb ) = @_;
@@ -110,7 +147,6 @@ sub parse_excel {
     }
 }
 
-
 sub import {
     my $class = shift;
     strict->import;
@@ -119,7 +155,7 @@ sub import {
     feature->import(':5.10');
     Try::Tiny->import;
     NG::Autobox::import($class);
-    $class->export_to_level(1, $class, @EXPORT);
+    $class->export_to_level( 1, $class, @EXPORT );
 }
 
 1;

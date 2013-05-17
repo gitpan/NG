@@ -4,14 +4,14 @@ use lib '../lib';
 use NG::File;
 use NG::Time;
 
-my $f = new NG::File;
+my $f = NG::File->new('/tmp');
 isa_ok $f, 'NG::File';
 
-my $stat = NG::File::fstat( '/tmp' );
+my $stat = $f->fstat;
 isa_ok $stat, 'NG::Hashtable';
 
 is $stat->{mode}, '1777';
 is $stat->{uid}, 0;
 
 isa_ok $stat->{atime}, 'NG::Time';
-is $stat->{atime}->year, NG::Time->new->now->year;
+is $stat->{atime}->year, NG::Time->now->year;

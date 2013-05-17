@@ -62,6 +62,7 @@ sub def {
     *t = eval('*'.$class.'::new');
     *t = sub {
         my ($class, @args) = @_;
+        push @args, '' if $#args % 2 == 0;
         my $o = bless {@args}, ref $class || $class;
         if(defined $methods->{build}){
             $o->build(@args);

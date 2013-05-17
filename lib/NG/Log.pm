@@ -7,12 +7,6 @@ use base qw(NG::Object);
 use NG::Hashtable;
 use NG::Array;
 use NG::Log::IPMatcher;
-use Geo::IP;
-
-sub new {
-    my $pkg = shift;
-    return bless {}, $pkg;
-}
 
 =head1 process_log
 my $logpath = '/opt/graphite/storage/log/webapp/access.log';

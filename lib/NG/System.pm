@@ -7,6 +7,8 @@ use NG::Array;
 use IPC::Open3;
 use Symbol;
 use Sys::CpuAffinity;
+use Net::SSH::Any;
+use Data::Dumper;
 use Child;
 
 sub new {
@@ -63,8 +65,11 @@ TODO: async ssh command
 sub remote_run {
     my $cb    = pop @_;
     my $cmd   = pop @_;
-    my @hosts = @_;
-    ...;
+    for my $host (@_) {
+        my $ssh = Net::SSH::Any->new($host);
+        my ($out, $err) = $ssh->capture2($cmd);
+        $cb->($out, $err);
+    };
 }
 
 =head2 taskset

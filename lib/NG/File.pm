@@ -1,73 +1,90 @@
-package NG::File;
-use strict;
-use warnings;
-use base qw(NG::Object);
 use NG::Array;
 use NG::Hashtable;
 use NG::Time;
-use File::Find;
-use File::Copy::Recursive;
-use YAML::XS ();
-use JSON::XS ();
+use NG::Class;
+use File::Copy::Recursive ();
+use Digest::MD5 qw(md5_hex);
 
-sub new {
-    my $pkg = shift;
-    return bless {}, $pkg;
-}
+NG::Class::def 'NG::File' => ['name'] => {
+    build => sub {
+        my ( $self, $filepath ) = @_;
+        $self->name = $filepath;
+    },
+    read => sub {
+        my ( $self, $filepath ) = @_;
+        $filepath //= $self->name;
+        open my $fh, '<', $filepath;
+        my $content = new NG::Array;
+        while (<$fh>) {
+            chomp;
+            $content->push($_);
+        }
+        return $content;
+    },
+    copy => sub { shift; File::Copy::Recursive::rcopy(@_) },
+    md5 => sub {
+        my ( $self, $filepath ) = @_;
+        $filepath //= $self->name;
+        open my $fh, '<', $filepath;
+        return md5_hex(
+            do { local $/; <$fh> }
+        );
+    },
+    fstat => sub {
+        my ( $self, $filepath ) = @_;
+        $filepath //= $self->name;
+        my $ret = NG::Array->new( stat($filepath) );
+        return NG::Hashtable->new(
+            dev     => $ret->get(0),
+            inode   => $ret->get(1),
+            mode    => sprintf( "%04o", $ret->get(2) & 07777 ),
+            nlink   => $ret->get(3),
+            uid     => $ret->get(4),
+            gid     => $ret->get(5),
+            rdev    => $ret->get(6),
+            size    => $ret->get(7),
+            atime   => NG::Time->new->from_epoch( $ret->get(8) ),
+            mtime   => NG::Time->new->from_epoch( $ret->get(9) ),
+            ctime   => NG::Time->new->from_epoch( $ret->get(10) ),
+            blksize => $ret->get(11),
+            blocks  => $ret->get(12),
+        );
+    },
+};
+
+1;
+__END__
+
+=head1 NAME
+
+NG::File - File object for NG.
+
+=head1 SYNOPSIS
+
+    my $f = NG::File->new('/tmp/file');
+    say $f->fstat;
+
+=head1 METHODS
 
 =head2 from_json/yaml
-return Hashtable or Array
-    my $object = from_yaml/json($file);
-=cut
 
-sub from_yaml {
-    my ( $filepath ) = @_;
-    my $ref = YAML::XS::LoadFile($filepath);
-    return
-      ref($ref) eq 'HASH'
-      ? NG::Hashtable->new($ref)
-      : NG::Array->new($ref);
-}
+Return Hashtable or Array:
 
-sub from_json {
-    my ( $filepath ) = @_;
-    my $data = read_file($filepath);
-    my $ref  = JSON::XS::decode_json($data);
-    return
-      ref($ref) eq 'HASH'
-      ? NG::Hashtable->new($ref)
-      : NG::Array->new($ref);
-}
+    my $object = NG::File->from_yaml/json($file);
 
 =head2 read_file
-    my $filepath = '/home/chenryn/test.conf';
-    my $content = read_file($filepath);
-    say $content;
 
-    read_file($filepath, sub {
+    my $filepath = '/home/chenryn/test.conf';
+    my $content = NG::File->read_file($filepath);
+ 
+    NG::File->new('test.txt')->read_file(sub {
         my ($content) = @_;
         say $content->get(1);
     });
-=cut
-
-sub read_file {
-    my ( $filepath, $cb ) = @_;
-    open my $fh, '<', $filepath;
-    my $content = new NG::Array;
-    while (<$fh>) {
-        chomp;
-        $content->push($_);
-    }
-    if ( defined $cb ) {
-        $cb->($content);
-    }
-    else {
-        return join( "\n", @$content );
-    }
-}
 
 =head2 read_dir
-    read_dir('/root')->each(sub { 
+
+    read_dir('/root')->each(sub {
         my $file = shift;
         read_file( $file, sub {
             ...
@@ -77,32 +94,9 @@ sub read_file {
         my ($dir, $file) = @_;
         ...
     });
-=cut
 
-sub read_dir {
-    if ( ref( $_[-1] ) eq 'CODE' ) {
-        my $cb      = pop @_;
-        my @dirpath = @_;
-        File::Find::find(
-            sub {
-                $cb->( $File::Find::dir, $_ );
-            },
-            @dirpath
-        );
-    }
-    else {
-        my $dirpath = shift;
-        return NG::Array->new( glob("$dirpath/*") );
-    }
-}
+=head2 fstat
 
-sub mkdir_p { File::Copy::Recursive::pathmk(@_) }
-
-sub rm_r { File::Copy::Recursive::pathrm(@_) }
-
-sub cp_r { File::Copy::Recursive::rcopy(@_) }
-
-=head2
      0 dev      device number of filesystem
      1 ino      inode number
      2 mode     file mode  (type and permissions)
@@ -116,26 +110,5 @@ sub cp_r { File::Copy::Recursive::rcopy(@_) }
     10 ctime    inode change time in seconds since the epoch (*)
     11 blksize  preferred block size for file system I/O
     12 blocks   actual number of blocks allocated
+
 =cut
-
-sub fstat {
-    my ( $file ) = @_;
-    my $ret = NG::Array->new( stat($file) );
-    return NG::Hashtable->new(
-        dev     => $ret->get(0),
-        inode   => $ret->get(1),
-        mode    => sprintf( "%04o", $ret->get(2) & 07777 ),
-        nlink   => $ret->get(3),
-        uid     => $ret->get(4),
-        gid     => $ret->get(5),
-        rdev    => $ret->get(6),
-        size    => $ret->get(7),
-        atime   => NG::Time->new->from_epoch( $ret->get(8) ),
-        mtime   => NG::Time->new->from_epoch( $ret->get(9) ),
-        ctime   => NG::Time->new->from_epoch( $ret->get(10) ),
-        blksize => $ret->get(11),
-        blocks  => $ret->get(12),
-    );
-}
-
-1;

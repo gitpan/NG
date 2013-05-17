@@ -9,18 +9,7 @@ my $f = new NG::File;
 isa_ok $f, 'NG::File';
 
 my $log = 't/log.txt';
-my $got = NG::File::read_file($log);
-is $got, "line1 123&abc\nline2 321&abc";
 
-NG::File::read_file($log, sub {
-    my ($line) = @_;
-    cmp_deeply $line, NG::Array->new( 'line1 123&abc', 'line2 321&abc' );
-});
+cmp_deeply $f->read($log), NG::Array->new( 'line1 123&abc', 'line2 321&abc' ), 'file read as array';
 
-my $list = NG::File::read_dir('/');
-isa_ok $list, 'NG::Array';
-
-NG::File::read_dir('.', sub {
-    my ($dir, $file) = @_;
-    ok $file, 'is file' if -f $dir.$file;
-});
+is $f->md5($log), '55dbbfe5cc8b26bca961406b6e35152e', 'file md5sum';
