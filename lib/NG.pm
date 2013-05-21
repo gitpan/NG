@@ -53,7 +53,7 @@ our @EXPORT = qw(
 
   def_class
 );
-our $VERSION = '0.001_04';
+our $VERSION = '0.001_05';
 
 sub file_stat   { NG::File->fstat(@_) }
 sub file_md5    { NG::File->md5(@_) }

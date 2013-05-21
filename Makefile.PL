@@ -37,6 +37,8 @@ WriteMakefile(
         'XML::Simple'              => 0,
         'SQL::Abstract'            => 0,
         'Child'                    => 0,
+        'Sys::CpuAffinity'         => 0,
+        'Net::SSH::Any'            => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'NG-*' },

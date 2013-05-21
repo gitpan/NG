@@ -16,6 +16,8 @@ requires 'HTML::Selector::XPath';
 requires 'Time::HiRes';
 requires 'SQL::Abstract';
 requires 'Child';
+requires 'Sys::CpuAffinity';
+requires 'Net::SSH::Any';
 
 on 'test' => sub {
     requires 'Test::More';

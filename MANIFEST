@@ -43,7 +43,6 @@ t/log.txt
 t/04-time.t
 t/09-system.t
 t/05-file-stat.t
-t/test.pl
 t/15-dir-read.t
 t/06-file-read.t
 t/test.xls
